@@ -11,7 +11,7 @@ but MLFlow UI will not be available
 #os.makedirs("/mlruns", exist_ok=True)
 #mlflow.set_tracking_uri("file:///mlruns")
 
-mlflow.set_tracking_uri("http://127.0.0.1:8000")
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("Integraion experiment")
 
 #Defining hyperparameters
