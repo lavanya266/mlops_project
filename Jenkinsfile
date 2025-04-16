@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // DOCKER_REGISTRY = 'docker.io'  // Replace with your registry URL if different
-        DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'
-        DOCKER_REPO = 'lavanya986/my-flask-app'
+        DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'  // Local image tag
+        DOCKER_REPO = 'lavanya986/my-flask-app'  // Docker Hub repository
     }
 
     stages {
@@ -38,8 +37,10 @@ pipeline {
             steps {
                 script {
                     // Build Flask app image
-                    sh 'docker build -t my-flask-app .'
-                    sh 'docker tag my-flask-app $DOCKER_BFLASK_IMAGE'
+                    sh 'docker build -t $DOCKER_BFLASK_IMAGE .'
+                    
+                    // Tag the image for Docker Hub repository (lavanya986/my-flask-app)
+                    sh 'docker tag $DOCKER_BFLASK_IMAGE $DOCKER_REPO:latest'
                 }
             }
         }
@@ -47,24 +48,12 @@ pipeline {
         stage('Test Flask App') {
             steps {
                 // Run tests for the Flask app
-                sh 'docker run my-flask-app python -m pytest app/tests/'
+                sh 'docker run $DOCKER_BFLASK_IMAGE python -m pytest app/tests/'
             }
         }
 
-        // stage('Push Images to Registry') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-        //             // Login to Docker registry
-        //             sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY"
-
-        //             // Push Flask app image to registry
-        //             sh 'docker push $DOCKER_BFLASK_IMAGE'
-        //         }
-        //     }
-
         stage('Push Images to Registry') {
             steps {
-        // Hardcoded Docker credentials
                 script {
                     // Hardcoded Docker credentials
                     def dockerUsername = "lavanya986"
@@ -76,11 +65,10 @@ pipeline {
 
                     // Push Flask app image to registry (use the tagged repository)
                     sh 'docker push $DOCKER_REPO:latest'
-                }    
+                }
             }
         }
-        
-        
+
         stage('Deploy Containers') {
             steps {
                 script {
@@ -90,7 +78,7 @@ pipeline {
 
                     // Run Flask container on port 5001
                     echo "Starting Flask container..."
-                    sh 'docker run -p 5001:5001 -td $DOCKER_BFLASK_IMAGE'
+                    sh 'docker run -p 5001:5001 -td $DOCKER_REPO:latest'
                 }
             }
         }
