@@ -77,8 +77,8 @@ pipeline {
                 }    
             }
         }
-        }
-
+        
+        
         stage('Deploy Containers') {
             steps {
                 script {
