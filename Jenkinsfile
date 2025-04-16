@@ -10,7 +10,7 @@ pipeline {
         stage('Check and Stop Existing Container') {
             steps {
                 script {
-                    def containerId = sh(script: "docker ps --filter 'publish=5000' --format '{{.ID}}'", returnStdout: true).trim()
+                    def containerId = sh(script: "docker ps --filter 'publish=5001' --format '{{.ID}}'", returnStdout: true).trim()
 
                     if (containerId) {
                         // Stop the container
