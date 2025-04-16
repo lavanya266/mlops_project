@@ -63,7 +63,7 @@ pipeline {
 
                     // Push Flask app image to registry (use the tagged repository)
                     sh 'docker push $DOCKER_REPO:latest'
-                }
+                
                 }
             }
         }
