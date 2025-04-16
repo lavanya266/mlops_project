@@ -31,6 +31,13 @@ pipeline {
         }
         stage('Pulling image') {
             steps {
+                // Hardcoded Docker credentials
+                    def dockerUsername = "lavanya986"
+                    def dockerPassword = "Lavanya@26"
+                    def dockerRegistry = "docker.io"  // Docker Hub registry
+
+                    // Login to Docker registry with hardcoded credentials
+                    sh "echo $dockerPassword | docker login -u $dockerUsername --password-stdin $dockerRegistry"
                 sh 'docker pull $DOCKER_BFLASK_IMAGE'
             }
         }
