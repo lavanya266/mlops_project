@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'docker.io'  // Replace with your registry URL if different
+        // DOCKER_REGISTRY = 'docker.io'  // Replace with your registry URL if different
         DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'
     }
 
@@ -50,16 +50,33 @@ pipeline {
             }
         }
 
+        // stage('Push Images to Registry') {
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+        //             // Login to Docker registry
+        //             sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY"
+
+        //             // Push Flask app image to registry
+        //             sh 'docker push $DOCKER_BFLASK_IMAGE'
+        //         }
+        //     }
+
         stage('Push Images to Registry') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    // Login to Docker registry
-                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY"
+        // Hardcoded Docker credentials
+                script {
+                    def dockerUsername = "lavanya986"
+                    def dockerPassword = "Lavanya@26"
+                    def dockerRegistry = "docker.io"  // Or any other registry you are using
 
-                    // Push Flask app image to registry
+            // Login to Docker registry with hardcoded credentials
+                    sh "echo $dockerPassword | docker login -u $dockerUsername --password-stdin $dockerRegistry"
+
+            // Push Flask app image to registry
                     sh 'docker push $DOCKER_BFLASK_IMAGE'
-                }
+                }    
             }
+        }
         }
 
         stage('Deploy Containers') {
