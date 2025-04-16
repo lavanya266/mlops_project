@@ -7,27 +7,26 @@ pipeline {
     }
 
     stages {
-        stage('Check and Stop Existing Containers') {
+        stage('Check and Stop Existing Container') {
             steps {
                 script {
-                    // Check and stop any running container using port 5000 (MLflow)
-                    def mlflowContainerId = sh(script: "docker ps --filter 'publish=5000' --format '{{.ID}}'", returnStdout: true).trim()
-                    if (mlflowContainerId) {
-                        // Stop the MLflow container
-                        sh "docker stop ${mlflowContainerId}"
-                        echo "Stopped MLflow container ${mlflowContainerId} using port 5000"
-                    } else {
-                        echo "No MLflow container found using port 5000."
-                    }
+                    def containerId = sh(script: "docker ps --filter 'publish=5000' --format '{{.ID}}'", returnStdout: true).trim()
 
-                    // Check and stop any running container using port 5001 (Flask)
-                    def flaskContainerId = sh(script: "docker ps --filter 'publish=5001' --format '{{.ID}}'", returnStdout: true).trim()
-                    if (flaskContainerId) {
-                        // Stop the Flask container
-                        sh "docker stop ${flaskContainerId}"
-                        echo "Stopped Flask container ${flaskContainerId} using port 5001"
+                    if (containerId) {
+                        // Stop the container
+                        sh "docker stop ${containerId}"
+                        echo "Stopped container ${containerId} that was using port 5000"
+
+                        // Verify the container is stopped
+                        def containerRunning = sh(script: "docker ps --filter 'id=${containerId}' --format '{{.ID}}'", returnStdout: true).trim()
+
+                        if (containerRunning) {
+                            error "Failed to stop container ${containerId}. Manual intervention required."
+                        } else {
+                            echo "Container ${containerId} successfully stopped."
+                        }
                     } else {
-                        echo "No Flask container found using port 5001."
+                        echo "No container found using port 5000."
                     }
                 }
             }
@@ -69,16 +68,10 @@ pipeline {
             }
         }
 
-        stage('Deploy Containers') {
+        stage('Deploy') {
             steps {
                 script {
-                    // Run MLflow container on port 5000
-                    echo "Starting MLflow container..."
-                    sh 'docker run -p 5000:5000 -td mlflow-app'
-
-                    // Run Flask container on port 5001
-                    echo "Starting Flask container..."
-                    sh 'docker run -p 5001:5001 -td $DOCKER_REPO:latest'
+                    sh 'docker run -p 5000:5000 -td $DOCKER_BFLASK_IMAGE'
                 }
             }
         }
