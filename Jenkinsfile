@@ -71,7 +71,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker run -p 5000:5000 -td $DOCKER_BFLASK_IMAGE'
+                    sh 'docker run -p 5001:5000 -td $DOCKER_BFLASK_IMAGE'
                 }
             }
         }
