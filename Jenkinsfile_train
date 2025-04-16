@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    environment {
+        DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'  // Local image tag
+        DOCKER_REPO = 'lavanya986/my-flask-app'  // Docker Hub repository
+    }
     stages {
         stage('Check and Stop Existing Container') {
             steps {
@@ -49,9 +52,18 @@ pipeline {
         }
         stage('Pushing image to registry') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin docker.io"
-                    sh 'docker push $DOCKER_BFLASK_IMAGE'
+                script {
+                    // Hardcoded Docker credentials
+                    def dockerUsername = "lavanya986"
+                    def dockerPassword = "Lavanya@26"
+                    def dockerRegistry = "docker.io"  // Docker Hub registry
+
+                    // Login to Docker registry with hardcoded credentials
+                    sh "echo $dockerPassword | docker login -u $dockerUsername --password-stdin $dockerRegistry"
+
+                    // Push Flask app image to registry (use the tagged repository)
+                    sh 'docker push $DOCKER_REPO:latest'
+                }
                 }
             }
         }
