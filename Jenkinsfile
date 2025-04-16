@@ -4,6 +4,7 @@ pipeline {
     environment {
         // DOCKER_REGISTRY = 'docker.io'  // Replace with your registry URL if different
         DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'
+        DOCKER_REPO = 'lavanya986/my-flask-app'
     }
 
     stages {
@@ -65,15 +66,16 @@ pipeline {
             steps {
         // Hardcoded Docker credentials
                 script {
+                    // Hardcoded Docker credentials
                     def dockerUsername = "lavanya986"
                     def dockerPassword = "Lavanya@26"
-                    def dockerRegistry = "docker.io"  // Or any other registry you are using
+                    def dockerRegistry = "docker.io"  // Docker Hub registry
 
-            // Login to Docker registry with hardcoded credentials
+                    // Login to Docker registry with hardcoded credentials
                     sh "echo $dockerPassword | docker login -u $dockerUsername --password-stdin $dockerRegistry"
 
-            // Push Flask app image to registry
-                    sh 'docker push $DOCKER_BFLASK_IMAGE'
+                    // Push Flask app image to registry (use the tagged repository)
+                    sh 'docker push $DOCKER_REPO:latest'
                 }    
             }
         }
