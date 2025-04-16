@@ -12,7 +12,7 @@ COPY app/ .
 
 COPY tests/ app/tests/
 
-CMD mlflow server --host 0.0.0.0 --port 5000 & \
+CMD mlflow server --host 0.0.0.0 --port 8000 & \
     python app.py
 
 
