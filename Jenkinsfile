@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'docker.io'  // Replace with your registry URL if different
         DOCKER_BFLASK_IMAGE = 'my-flask-app:latest'
-        DOCKER_MLFLOW_IMAGE = 'mlflow-app:latest'
     }
 
     stages {
@@ -40,10 +39,6 @@ pipeline {
                     // Build Flask app image
                     sh 'docker build -t my-flask-app .'
                     sh 'docker tag my-flask-app $DOCKER_BFLASK_IMAGE'
-
-                    // Build MLflow app image (you need a Dockerfile for this)
-                    sh 'docker build -t mlflow-app ./mlflow'  // Assuming MLflow Dockerfile is in the `./mlflow` directory
-                    sh 'docker tag mlflow-app $DOCKER_MLFLOW_IMAGE'
                 }
             }
         }
@@ -63,9 +58,6 @@ pipeline {
 
                     // Push Flask app image to registry
                     sh 'docker push $DOCKER_BFLASK_IMAGE'
-
-                    // Push MLflow app image to registry (if needed)
-                    sh 'docker push $DOCKER_MLFLOW_IMAGE'
                 }
             }
         }
@@ -75,7 +67,7 @@ pipeline {
                 script {
                     // Run MLflow container on port 5000
                     echo "Starting MLflow container..."
-                    sh 'docker run -p 5000:5000 -td $DOCKER_MLFLOW_IMAGE'
+                    sh 'docker run -p 5000:5000 -td mlflow-app'
 
                     // Run Flask container on port 5001
                     echo "Starting Flask container..."
