@@ -10,7 +10,7 @@ pipeline {
         stage('Check and Stop Existing Container') {
             steps {
                 script {
-                    def containerId = sh(script: "docker ps --filter 'publish=5001' --format '{{.ID}}'", returnStdout: true).trim()
+                    def containerId = sh(script: "docker ps --filter 'publish=5000' --format '{{.ID}}'", returnStdout: true).trim()
 
                     if (containerId) {
                         // Stop the container
@@ -71,7 +71,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker run -p 5001:5000 -td $DOCKER_BFLASK_IMAGE'
+                    sh 'docker run -p 5002:5000 -td $DOCKER_BFLASK_IMAGE'
                 }
             }
         }
